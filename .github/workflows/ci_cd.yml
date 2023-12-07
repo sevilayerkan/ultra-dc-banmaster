@@ -1,0 +1,42 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+      #TODO: Secrets to be setted later
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: your-aws-region
+    
+    #TODO: AWS credentials will be updated
+    - name: Deploy to AWS
+      run: |
+        # aws s3 sync . s3://your-bucket-name
+        # aws lambda update-function-code --function-name your-function-name --s3-bucket your-bucket-name --s3-key your-object-key

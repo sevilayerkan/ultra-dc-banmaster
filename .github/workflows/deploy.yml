@@ -1,0 +1,35 @@
+#For Jenkins AWS Workflow
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        
+    #TODO: AWS credentials will be updated
+    - name: Deploy to AWS
+      run: |
+        # Add your deployment script or commands here
+        # For example:
+        # aws s3 sync . s3://your-bucket-name
+        # aws lambda update-function-code --function-name your-function-name --s3-bucket your-bucket-name --s3-key your-object-key
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
