@@ -26,6 +26,9 @@ try:
 except FileNotFoundError:
     user_data = {}
 
+def get_current_datetime():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user.name}')
@@ -44,7 +47,7 @@ async def log_to_channel(channel, message):
 @bot.event
 async def on_member_remove(member):
     if member.guild.id == server_id:
-        leave_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        leave_datetime = get_current_datetime()
         print(f'{member.display_name} left the server at {leave_datetime}')
 
         blacklist.add(member.id)
@@ -68,7 +71,7 @@ async def on_member_join(member):
         await send_dm(member, "Joining the server after leaving is prohibited. Please contact an admin.")
         await member.ban(reason="Left the server and attempted to rejoin.")
     else:
-        join_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        join_datetime = get_current_datetime()
         print(f'{member.display_name} joined the server at {join_datetime}')
 
         await log_to_channel(blacklist_channel_id, f'{member.display_name} joined the server at {join_datetime}')
@@ -95,7 +98,7 @@ async def ban_user(ctx, username):
             await log_to_channel(BLACKLIST_CHANNEL_ID, f'{ctx.author.display_name} banned {member.display_name}')
 
             # Update user_data with ban date
-            user_data[member.id]['ban_date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            user_data[member.id]['ban_date'] = get_current_datetime()
 
             # Save user_data to the JSON file
             with open(DB_FILE, 'w') as file:
