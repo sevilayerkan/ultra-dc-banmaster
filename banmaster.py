@@ -8,9 +8,13 @@ intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 # Configuration
-SERVER_ID = YOUR_SERVER_ID
-BLACKLIST_CHANNEL_ID = YOUR_LOG_CHANNEL_ID
-BOT_COMMAND_CHANNEL_ID = YOUR_BOT_COMMAND_CHANNEL_ID
+# Retrieve secrets from environment variables
+server_id = int(os.environ['SERVER_ID'])
+bot_token = os.environ['BOT_TOKEN']
+log_channel_id = int(os.environ['LOG_CHANNEL_ID'])
+bot_command_channel_id = int(os.environ['BOT_COMMAND_CHANNEL_ID'])
+blacklist_channel_id = int(os.environ['BLACKLIST_CHANNEL_ID'])
+
 DB_FILE = 'user_db.json'  # JSON file to store user data
 
 blacklist = set()
@@ -39,7 +43,7 @@ async def log_to_channel(channel, message):
 
 @bot.event
 async def on_member_remove(member):
-    if member.guild.id == SERVER_ID:
+    if member.guild.id == server_id:
         leave_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f'{member.display_name} left the server at {leave_datetime}')
 
@@ -47,7 +51,7 @@ async def on_member_remove(member):
 
         await send_dm(member, "Joining the server after leaving is prohibited. Please contact an admin.")
 
-        await log_to_channel(BLACKLIST_CHANNEL_ID, f'{member.display_name} left the server at {leave_datetime}')
+        await log_to_channel(blacklist_channel_id, f'{member.display_name} left the server at {leave_datetime}')
 
         # Update user_data with leave date
         user_data[member.id]['leave_date'] = leave_datetime
@@ -78,7 +82,7 @@ async def on_member_join(member):
 
 @bot.command(name='ban')
 async def ban_user(ctx, username):
-    if ctx.channel.id == BOT_COMMAND_CHANNEL_ID:
+    if ctx.channel.id == bot_command_channel_id:
         member = discord.utils.get(ctx.guild.members, name=username)
 
         if member:
@@ -105,4 +109,4 @@ async def ban_user(ctx, username):
     else:
         await ctx.send("This command can only be used in the specified command channel.")
 
-bot.run('YOUR_BOT_TOKEN')
+bot.run(bot_token)
