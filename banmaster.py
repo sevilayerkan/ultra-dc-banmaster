@@ -71,7 +71,7 @@ async def on_member_join(member):
         join_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f'{member.display_name} joined the server at {join_datetime}')
 
-        await log_to_channel(BLACKLIST_CHANNEL_ID, f'{member.display_name} joined the server at {join_datetime}')
+        await log_to_channel(blacklist_channel_id, f'{member.display_name} joined the server at {join_datetime}')
 
         # Update user_data with join date
         user_data[member.id] = {'join_date': join_datetime}
